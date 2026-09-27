@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="82" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="ecommerce.produtos (1)" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="br.edu.utfpr.td.tsi.ecommerce.produtos.Main" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

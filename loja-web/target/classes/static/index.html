@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>E‑Commerce Simples</title>
+    <style>
+        body {font-family: Arial, sans-serif; margin: 20px; background:#f5f5f5;}
+        h1 {color:#2c3e50;}
+        .container {max-width:600px; margin:auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+        label {display:block; margin-top:10px;}
+        input, select {width:100%; padding:8px; margin-top:4px; border:1px solid #ccc; border-radius:4px;}
+        button {margin-top:15px; padding:10px 15px; background:#27ae60; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+        button:hover {background:#219150;}
+        .log {margin-top:20px; background:#eaeaea; padding:10px; border-radius:4px; height:150px; overflow:auto; font-family:monospace;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Loja Simples</h1>
+        <form id="checkoutForm">
+            <label for="produto">Produto</label>
+            <select id="produto" name="idProduto" required></select>
+
+            <label for="nome">Nome do Cliente</label>
+            <input type="text" id="nome" name="nomeCliente" required />
+
+            <label for="email">E‑mail</label>
+            <input type="email" id="email" name="emailCliente" required />
+
+            <label for="cep">CEP</label>
+            <input type="text" id="cep" name="cep" required />
+
+            <label for="cartao">Número do Cartão</label>
+            <input type="text" id="cartao" name="numeroCartao" required />
+
+            <button type="submit">Confirmar Compra</button>
+        </form>
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const LOJA_API = `http://localhost:8080`;
+        const PRODUTOS_API = `http://localhost:8081`;
+        const logEl = document.getElementById('log');
+        
+        function log(msg){
+            const line = document.createElement('div');
+            line.textContent = msg;
+            logEl.appendChild(line);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+        
+        async function loadCatalog(){
+            try {
+                const resp = await fetch(`${PRODUTOS_API}/catalogo`);
+                if(!resp.ok) throw new Error('Erro ao buscar catálogo');
+                const produtos = await resp.json();
+                
+                const select = document.getElementById('produto');
+                select.innerHTML = ''; 
+                
+                produtos.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    
+                    let statusEstoque = p.quantidadeEmEstoque > 0 ? `(Estoque: ${p.quantidadeEmEstoque})` : `(ESGOTADO)`;
+                    opt.textContent = `${p.nome} - R$ ${p.preco} ${statusEstoque}`;
+                    
+                    if (p.quantidadeEmEstoque <= 0) {
+                        opt.disabled = true;
+                    }
+                    
+                    select.appendChild(opt);
+                });
+                
+                log('Catálogo atualizado com sucesso.');
+            } catch(e) {
+                log('⚠️ ' + e.message);
+            }
+        }
+        
+        document.getElementById('checkoutForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const data = {
+                idProduto: document.getElementById('produto').value,
+                nomeCliente: document.getElementById('nome').value,
+                emailCliente: document.getElementById('email').value,
+                cep: document.getElementById('cep').value,
+                numeroCartao: document.getElementById('cartao').value
+            };
+            
+            try {
+                const resp = await fetch(`${LOJA_API}/checkout`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const txt = await resp.text();
+                log('🟢 Resposta do servidor: ' + txt);
+                
+                await loadCatalog();
+            } catch(err) {
+                log('⚠️ Falha no checkout: ' + err.message);
+            }
+        });
+        
+        loadCatalog();
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>br.edu.utfpr.td.tsi</groupId>
+    <artifactId>ecommerce-microservicos-utfpr</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <!-- Define os 7 microsserviços como módulos do projeto pai -->
+    <modules>
+        <module>api-cep</module>
+        <module>api-email</module>
+        <module>api-entrega</module>
+        <module>api-fiscal</module>
+        <module>api-pagamento</module>
+        <module>api-produtos</module>
+        <module>loja-web</module>
+    </modules>
+
+</project>
