@@ -9,7 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -19,6 +22,18 @@ public class ProdutoEndpoint {
 	public ResponseEntity<?> carregarCatalogo() {
 		List<Produto> produtos = criarProdutos();
 		return ResponseEntity.status(HttpStatus.OK).body(produtos);
+	}
+
+	@PostMapping(value = "/baixa", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> baixarEstoque(@RequestBody Map<String, String> request) {
+		String id = request.get("idProduto");
+		boolean sucesso = br.edu.utfpr.td.tsi.ecommerce.produtos.repository.EstoqueRepository.baixa(id);
+		
+		if (sucesso) {
+			return ResponseEntity.ok(Map.of("status", "Estoque atualizado", "restante", br.edu.utfpr.td.tsi.ecommerce.produtos.repository.EstoqueRepository.getQuantidade(id)));
+		} else {
+			return ResponseEntity.badRequest().body(Map.of("erro", "Estoque insuficiente"));
+		}
 	}
 
 	private List<Produto> criarProdutos() {

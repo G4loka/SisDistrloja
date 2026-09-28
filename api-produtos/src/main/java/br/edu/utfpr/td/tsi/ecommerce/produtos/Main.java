@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Main {
 
 	public static void main(String[] args) {
-		// Removido para usar o application.properties
+
 		SpringApplication.run(Main.class, args);
 	}
 }

@@ -37,10 +37,14 @@ public class OrquestradorService {
         logger.info("Executando [POST] /api/email - Disparando e-mail de resultado da transação");
         enviarEmail(request.emailCliente, "Resultado do Pagamento", "O status do seu pagamento é: " + statusPagamento);
 
-        logger.info("Executando [POST] /api/fiscal - Solicitando emissão de NF e baixa de estoque");
+        logger.info("Executando [POST] /api/fiscal - Solicitando emissão de NF");
         Map<String, String> fiscalRequest = Map.of("idProduto", request.idProduto, "cliente", request.nomeCliente);
         Map<?, ?> fiscalResponse = rest.postForObject(FISCAL_URL + "/api/fiscal", fiscalRequest, Map.class);
         String nfe = (String) fiscalResponse.get("nfe");
+
+        logger.info("Executando [POST] /baixa - Solicitando baixa no estoque da API de Produtos (8081)");
+        Map<String, String> baixaRequest = Map.of("idProduto", request.idProduto);
+        rest.postForObject("http://localhost:8081/baixa", baixaRequest, Map.class);
 
         logger.info("Executando [POST] /api/email - Disparando e-mail com a Nota Fiscal ({})", nfe);
         enviarEmail(request.emailCliente, "Sua Nota Fiscal", "Sua NF foi gerada com sucesso: " + nfe);
